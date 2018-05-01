@@ -106,22 +106,52 @@ public class scrape
 		long match = matchIDs.get(select);
 		String url = "https://www.dotabuff.com/matches/"+match;
 		Document matchInfo = Jsoup.connect(url).get();
-		Elements collectHeroes = matchInfo.getElementsByClass("image-hero image-icon image-overlay");
 		String [][] radiant = new String [5][10];
 		
-		//loop to add heroes to array
+		//add hero names
 		for(int r = 0; r < 5; r++)
 		{
+			Elements collectHeroes = matchInfo.getElementsByClass("image-hero image-icon image-overlay");
 			Element heroElement = collectHeroes.get(r);
 			String hero = heroElement.toString();
 			int find1 = hero.indexOf('"', 76) + 1;
 			int find2 = hero.indexOf('"', 77);
 			hero = hero.substring(find1, find2);
 			radiant [r][0] = hero;
-			System.out.println(radiant[r][0]);				
+		}//end of hero name loop
+		
+		//add player names
+		for(int r = 0; r < 5; r++)
+		{
+			Elements collectPlayers = matchInfo.getElementsByClass("tf-pl single-lines");
+			Element playerElement = collectPlayers.get(r);
+			String playerLong = playerElement.toString();
+			int find1 = playerLong.indexOf(" ", 31) + 1;
+			int find2 = playerLong.indexOf("<", 32);
+			String player = playerLong.substring(find1, find2);
+			
+			if(!"Anonymous".equals(player))
+			{
+				find1 = playerLong.indexOf(">", 32) + 1;
+				find2 = playerLong.indexOf("<", 116);				
+				player = playerLong.substring(find1, find2);
+				radiant [r][1] = player;				
+			}
+			else
+			{
+				radiant [r][1] = player;
+			}
+		}//end of player name loop
+		
+		
+		//add kills
+		for(int i = 0; i < 5; i = i + 1)
+		{
+			Elements collectKills = matchInfo.getElementsByClass(" team-max");
+			Element killsElement = collectKills.get(i);
+			String kills = killsElement.toString();
+			System.out.println(kills);
 		}
-		
-		
 		
 	}
 	
